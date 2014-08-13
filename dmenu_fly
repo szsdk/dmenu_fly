@@ -19,7 +19,7 @@ with open(file_path,'r') as data_file:
             data[tmp[1]]=[int(tmp[0]),tmp[2]]
         key=key+tmp[1]+'\n'
 
-user_select=os.popen(' echo "'+key+'"|dmenu')
+user_select=os.popen(' echo "'+key[:-1]+'"|dmenu')
 user=user_select.read()
 
 if not user:
