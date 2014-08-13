@@ -7,4 +7,5 @@ This a short `python` script for improve the convience of `dmenu`. The usage is 
 Install
 ------
 Copy the `dmenu_fly` to `/usr/bin` (you may have to do it as `root`). For example, in `Ubuntu`, you can enter where the `dmenu_fly` is and run
+
 `sudo cp dmenu_fly /usr/bin`
