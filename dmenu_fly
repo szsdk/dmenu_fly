@@ -4,10 +4,12 @@ import os
 import subprocess
 import time
 
-key=[]
+key=""
 data={}
+#The data file is saved dafultly at ~/.dmenu_data
 file_path=os.getenv("HOME")+'/.dmenu_data'
 
+#Read the data file
 with open(file_path,'r') as data_file:
     for i in data_file:
         tmp=i[:-1].split(';')
@@ -15,22 +17,24 @@ with open(file_path,'r') as data_file:
             data[tmp[1]]=[int(tmp[0])]
         else:
             data[tmp[1]]=[int(tmp[0]),tmp[2]]
-        key.append(tmp[1])
+        key=key+tmp[1]+'\n'
 
-user_select=os.popen(' echo "'+'\n'.join(key)+'"|dmenu')
+user_select=os.popen(' echo "'+key+'"|dmenu')
 user=user_select.read()
 
 if not user:
     quit()
 
-if user in data:
-    if len(data[user])==1:
-        try_run=subprocess.Popen(user,shell=True)
-    else:
-        try_run=subprocess.Popen(data[user][1],shell=True)
+#Attempt to run the command
+if (user in data)and (len(data[user])==2):
+    #You can do some alias in the format like
+    #  10;na;nautilus --nodesktop
+    #at the data file
+    try_run=subprocess.Popen(data[user][1],shell=True)
 else:
     try_run=subprocess.Popen(user,shell=True)
 
+#Some softwares will not giva back a code about the status. So if it run more than 0.1 second, we think it runs well.
 time.sleep(0.1)
 if not try_run.poll():
     if user in data:
@@ -38,6 +42,7 @@ if not try_run.poll():
     else:
         data[user]=[1]
 
+#Write the data file
 with open(file_path,'w') as data_file:
     for i in data:
         tmp=data[i]
@@ -46,4 +51,5 @@ with open(file_path,'w') as data_file:
         else:
             print(str(tmp[0])+';'+i,file=data_file)
 
+#Sort the software you used based on times
 os.system("sort -r -n -k 1 -t \; "+file_path+" -o ~/.dmenu_data")
