@@ -52,4 +52,4 @@ with open(file_path,'w') as data_file:
             print(str(tmp[0])+';'+i,file=data_file)
 
 #Sort the software you used based on times
-os.system("sort -r -n -k 1 -t \; "+file_path+" -o ~/.dmenu_data")
+os.system("sort -r -n -k 1 -t \; "+file_path+" -o "+file_path)
