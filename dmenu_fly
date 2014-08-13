@@ -1,0 +1,49 @@
+#!/usr/bin/python3
+
+import os
+import subprocess
+import time
+
+key=[]
+data={}
+file_path=os.getenv("HOME")+'/.dmenu_data'
+
+with open(file_path,'r') as data_file:
+    for i in data_file:
+        tmp=i[:-1].split(';')
+        if len(tmp)==2:
+            data[tmp[1]]=[int(tmp[0])]
+        else:
+            data[tmp[1]]=[int(tmp[0]),tmp[2]]
+        key.append(tmp[1])
+
+user_select=os.popen(' echo "'+'\n'.join(key)+'"|dmenu')
+user=user_select.read()
+
+if not user:
+    quit()
+
+if user in data:
+    if len(data[user])==1:
+        try_run=subprocess.Popen(user,shell=True)
+    else:
+        try_run=subprocess.Popen(data[user][1],shell=True)
+else:
+    try_run=subprocess.Popen(user,shell=True)
+
+time.sleep(0.1)
+if not try_run.poll():
+    if user in data:
+        data[user][0]+=1
+    else:
+        data[user]=[1]
+
+with open(file_path,'w') as data_file:
+    for i in data:
+        tmp=data[i]
+        if len(tmp)==2:
+            print(str(tmp[0])+';'+i+';'+tmp[1],file=data_file)
+        else:
+            print(str(tmp[0])+';'+i,file=data_file)
+
+os.system("sort -r -n -k 1 -t \; "+file_path+" -o ~/.dmenu_data")
