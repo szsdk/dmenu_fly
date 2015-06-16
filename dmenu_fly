@@ -5,7 +5,7 @@ import subprocess
 import time
 
 def Run_program(usr,data):
-    #Attempt to run the command
+    '''Attempt to run the command'''
     if (user in data)and (len(data[user])==2):
         #You can do some alias in the format like
         #  10;na;nautilus --nodesktop
@@ -16,11 +16,14 @@ def Run_program(usr,data):
 
     #Some softwares will not giva back a code about the status. So if it run more than 0.1 second, we think it runs well.
     time.sleep(0.1)
+    
     if not try_run.poll():
         if user in data:
             data[user][0]+=1
         else:
             data[user]=[1]
+
+    print(data)
 
     #Write the data file
     with open(file_path,'w') as data_file:
@@ -52,6 +55,9 @@ file_path=os.getenv("HOME")+'/.dmenu_data'
 with open(file_path,'r') as data_file:
     for i in data_file:
         tmp=i[:-1].split(';')
+        print(tmp)
+        if len(tmp)==1:
+            break
         if len(tmp)==2:
             data[tmp[1]]=[int(tmp[0])]
         else:
@@ -59,7 +65,7 @@ with open(file_path,'r') as data_file:
         key=key+tmp[1]+'\n'
 
 user_select=os.popen(' echo "'+key[:-1]+'"|dmenu')
-user=user_select.read()
+user=user_select.read()[0:-1]
 
 if not user:
     quit()
